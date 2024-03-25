@@ -49,17 +49,67 @@ async function doSomethingWithUsers() {
 
 doSomethingWithUsers();
 
-// try/catch
 
-try{
+// try/catch 
+
+try {
     const labels = ['label1'];
-    // saySomething('asda');
+    // saySomething('asdsa');
     console.log(`First label is ${labels[0]}`);
 } catch (err) {
     console.log('An error has occured: ', err);
-} finally {console.log('Finally has executed');
+} finally {
+    console.log('Finally has executed');
 }
 
 console.log('After try/catch');
 
-//API - aplication programing internet
+
+const baseUrl = 'https://jsonplaceholder.typicode.com';
+const posts = '/posts';
+
+// exemplu folosind promisiuni
+fetch(`${baseUrl}${posts}`)
+.then((response) => {
+    console.log(response);
+    response.json()
+.then((data) => {
+    console.log(data);
+})})
+.catch((e) => console.log(e));
+
+
+// exemplu folosind async/await
+async function getPosts() {
+    try {
+        const response = await fetch(`${baseUrl}${posts}`);
+        const data = await response.json();
+        console.log('data: ', data);
+        return data;
+    } catch (e) {
+        console.log('Something went wrong: ', e);
+    }
+}
+
+getPosts();
+
+async function displayPosts() {
+    const posts = await getPosts();
+    const postsTargetElement = document.getElementById('main');
+    
+    for (const post of posts) {
+        const container = document.createElement('article');
+        container.innerHTML = `<h2>${post.title}</h2>
+        <div>${post.body}</div>
+        <button>Delete</button>`;
+        postsTargetElement.appendChild(container);
+        const btn = container.querySelector('button');
+        btn.addEventListener('click', () => {
+            fetch(`${baseUrl}/posts/${post.id}`, {method: 'DELETE'})
+            .then((obj) => console.log('deleted: ', obj))
+            .then(() => container.remove());
+        });
+    }
+}
+
+displayPosts();
